@@ -2,10 +2,10 @@ cask "opencode-bar" do
   version "2.1.3"
   sha256 "0f536276f7cf05b033ad838b90157474ba31cc7d8b2404600c02426b1c671f23"
 
-  url "https://github.com/kargnas/opencode-bar/releases/download/v#{version}/OpenCodeUsageMonitor-v#{version}.dmg"
+  url "https://github.com/opgginc/opencode-bar/releases/download/v#{version}/OpenCodeUsageMonitor-v#{version}.dmg"
   name "OpenCode Bar"
   desc "Monitor AI provider usage from OpenCode in the macOS menu bar"
-  homepage "https://github.com/kargnas/opencode-bar"
+  homepage "https://github.com/opgginc/opencode-bar"
 
   livecheck do
     url :url

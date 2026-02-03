@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-brew tap kargnas/opencode-bar
+brew tap opgginc/opencode-bar
 brew install --cask opencode-bar
 ```
 
@@ -15,4 +15,4 @@ Includes a CLI tool (`opencodebar`) for terminal usage.
 
 ## More info
 
-https://github.com/kargnas/opencode-bar
+https://github.com/opgginc/opencode-bar
