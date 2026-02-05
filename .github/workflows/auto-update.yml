@@ -1,0 +1,67 @@
+name: Auto update opencode-bar cask
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Check latest release (non-prerelease)
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          API_URL="https://api.github.com/repos/opgginc/opencode-bar/releases"
+          latest=$(curl -sL -H "Authorization: Bearer $GH_TOKEN" "$API_URL" | jq -r '[.[] | select(.prerelease==false and .draft==false)][0].tag_name')
+          if [ -z "$latest" ] || [ "$latest" = "null" ]; then
+            echo "No release found" >&2
+            exit 1
+          fi
+          version=${latest#v}
+          echo "version=$version" >> $GITHUB_OUTPUT
+
+      - name: Get dmg sha256
+        id: sha
+        run: |
+          set -e
+          version="${{ steps.release.outputs.version }}"
+          url="https://github.com/opgginc/opencode-bar/releases/download/v${version}/OpenCodeUsageMonitor-v${version}.dmg"
+          echo "url=$url" >> $GITHUB_OUTPUT
+          curl -sL "$url" -o /tmp/opencode-bar.dmg
+          sha=$(shasum -a 256 /tmp/opencode-bar.dmg | awk '{print $1}')
+          echo "sha=$sha" >> $GITHUB_OUTPUT
+
+      - name: Update cask
+        run: |
+          set -e
+          version="${{ steps.release.outputs.version }}"
+          sha="${{ steps.sha.outputs.sha }}"
+          file="Casks/opencode-bar.rb"
+          sed -i "s/^  version \".*\"/  version \"${version}\"/" "$file"
+          sed -i "s/^  sha256 \".*\"/  sha256 \"${sha}\"/" "$file"
+
+      - name: Commit & push if changed
+        run: |
+          set -e
+          if git diff --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git config user.name "Sangrak Choi"
+          git config user.email "kars@kargn.as"
+          version="${{ steps.release.outputs.version }}"
+          git add Casks/opencode-bar.rb
+          git commit -m "Update opencode-bar to ${version}"
+          git push
