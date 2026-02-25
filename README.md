@@ -1,11 +1,12 @@
 # Homebrew Tap for OpenCode Bar
 
-## Install
+> **This tap has been migrated.** Use the new tap instead:
 
 ```bash
-brew tap opgginc/opencode-bar
-brew install --cask opencode-bar
+brew install --cask opgginc/tap/opencode-bar
 ```
+
+If you previously tapped `opgginc/opencode-bar`, Homebrew will automatically redirect you to the new tap via `tap_migrations.json`.
 
 ## What is OpenCode Bar?
 
